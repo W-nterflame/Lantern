@@ -8,35 +8,54 @@ static float angleX = 0.0f;
 static float angleY = 0.0f;
 static float angleZ = 0.0f;
 
+bool lampOn = true;                     // Lamp on/off state
+float warmToCold = 0.5f;                // 0.0 = fully warm, 1.0 = fully cold
+float lampColor[3] = {1.0f, 0.8f, 0.6f}; // Initial warm light (RGB)
+
+
 
 void myInit(void)
 {
-    // Lighting configuration
-    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat mat_shininess[] = { 50.0 };  // Adjust shininess for specular highlights
-    GLfloat light_position[] = { 0.0, 3.0, 0.0, 1.0 };  // Position the light above the scene
+    GLfloat mat_specular[] = { 0.2, 0.2, 0.2, 1.0 };
+    GLfloat mat_shininess[] = { 20.0 };
+    GLfloat light_position[] = { 3.0, 3.0, 3.0, 1.0 };
     GLfloat white_light[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };  // Disable ambient light
+    GLfloat ambient_light[] = { 0.2, 0.2, 0.2, 1.0 };
 
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffuse light for the main color
-    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular highlights
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, no_ambient);  // No global ambient light
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light);
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-
-    // Enable color tracking with material properties
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-
+    glEnable(GL_NORMALIZE); // Ensure normals are scaled properly
     glClearColor(0.0, 0.0, 0.0, 0.0);
-    glShadeModel(GL_SMOOTH); // Smooth shading for better lighting effects
-    glEnable(GL_DEPTH_TEST); // Enable depth testing for 3D rendering
-    glLineWidth(15.0f); // Set line width for frame edges
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_DEPTH_TEST);
 }
+
+void updateLampColor() {
+    // Interpolate between warm (1.0, 0.8, 0.6) and cold (0.6, 0.8, 1.0)
+    lampColor[0] = 1.0f * (1.0f - warmToCold) + 0.6f * warmToCold; // Red
+    lampColor[1] = 0.8f * (1.0f - warmToCold) + 0.8f * warmToCold; // Green
+    lampColor[2] = 0.6f * (1.0f - warmToCold) + 1.0f * warmToCold; // Blue
+}
+
+void setLampMaterial() {
+    if (lampOn) {
+        GLfloat lampEmission[] = {lampColor[0], lampColor[1], lampColor[2], 1.0f};
+        glMaterialfv(GL_FRONT, GL_EMISSION, lampEmission);
+    } else {
+        GLfloat lampEmission[] = {0.0f, 0.0f, 0.0f, 1.0f}; // Light off
+        glMaterialfv(GL_FRONT, GL_EMISSION, lampEmission);
+    }
+}
+
 
 void drawHollowFrameCube(float size)
 {
@@ -84,15 +103,14 @@ void drawHollowFrameCube(float size)
     }
 }
 
-void drawPanel(float size, float pos) // pos is for y translation
-{
-    // Panel is a solid cube that connects the bottom of the lamp to the frame
+void drawLamp() {
+    setLampMaterial(); // Apply current material
+
     glPushMatrix();
-    glTranslatef(0.0f, pos, 0.0f);  // Position it beneath the solid cube
-    glScalef(1.0f, 0.1f, 1.0f);  // Make the panel thinner than the solid cube
-    glutSolidCube(size);  // Draw the panel as a solid cube
+    glutSolidCube(1.0); // Lamp sphere
     glPopMatrix();
 }
+
 
 void drawCornerBumpers(float size)
 {
@@ -117,6 +135,20 @@ void drawCornerBumpers(float size)
     }
 }
 
+void drawPanel(float size, float pos) // pos is for y translation
+{
+    // Panel is a solid cube that connects the bottom of the lamp to the frame
+    glPushMatrix();
+    glTranslatef(0.0f, pos, 0.0f);  // Position it beneath the solid cube
+    glScalef(1.0f, 0.1f, 1.0f);  // Make the panel thinner than the solid cube
+    glutSolidCube(size);  // Draw the panel as a solid cube
+    glPopMatrix();
+}
+
+void resetMaterial() {
+    GLfloat no_emission[] = { 0.0, 0.0, 0.0, 1.0 };
+    glMaterialfv(GL_FRONT, GL_EMISSION, no_emission); // Reset emissive material
+}
 
 
 void myDisplay(void)
@@ -132,7 +164,9 @@ void myDisplay(void)
 
     // Draw the solid cube (acting as the light)
     glColor3f(0.6, 0.6, 0.6);
-    glutSolidCube(1.0);
+    setLampMaterial();
+    drawLamp(); // Draw the lamp
+    resetMaterial();
 
     // Draw the hollow frame as a casing around the solid cube
     glColor3f(0.8, 0.8, 0.8);
@@ -147,6 +181,7 @@ void myDisplay(void)
 
     glPopMatrix();
     glutSwapBuffers(); // swap buffers for double buffering
+
 }
 
 
@@ -158,20 +193,33 @@ void myReshape(int w, int h)
     gluPerspective(60.0, (GLfloat)w / (GLfloat)h, 1.0, 20.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt(0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
-void myKeyboard(unsigned char key, int x, int y)
-{
-    switch (key)
-    {
-        case 'q': // Press 'q' to exit the program
+void myKeyboard(unsigned char key, int x, int y) {
+    switch (key) {
+        case '+': // Make light warmer
+            warmToCold -= 0.1f;
+            if (warmToCold < 0.0f) warmToCold = 0.0f;
+            updateLampColor(); // Update light color
+            break;
+        case '-': // Make light colder
+            warmToCold += 0.1f;
+            if (warmToCold > 1.0f) warmToCold = 1.0f;
+            updateLampColor(); // Update light color
+            break;
+        case 'o': // Toggle lamp on/off
+            lampOn = !lampOn;
+            break;
+        case 'q': // Quit program
             exit(0);
             break;
         default:
             break;
     }
+    glutPostRedisplay(); // Refresh display
 }
+
 
 void mySpecialKeys(int key, int x, int y)
 {
