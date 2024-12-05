@@ -241,11 +241,20 @@ void displayLantern(void)
 
     // Draw the hollow frame as a casing around the solid cube
     glColor3f(0.8, 0.8, 0.8);
+
+
     drawHollowFrameCube(1.2f); // Slightly larger to act as a casing
 
     glColor3f(0.8, 0.8, 0.8);
     drawPanel(1.2f, -0.55f);  // Draw a panel connecting the bottom
     drawPanel(1.05f, 0.55f);  // Draw a panel connecting the top
+
+    drawPanel(0.8f, -0.65f);  // Draw a panel connecting the bottom for connecting rope
+
+    glPushMatrix(); // ring
+    glTranslatef(0,-0.69,0);
+    glutSolidTorus(0.03,0.05,20,20);
+    glPopMatrix();
 
     glColor3f(0.7, 0.7, 0.7); // Different color for the bumpers if needed
     drawCornerBumpers(1.2f); // Slightly larger to match the frame size
@@ -287,16 +296,14 @@ void myDisplay()
     glutSwapBuffers();
 }
 
-
-void myReshape(int w, int h)
-{
+void myReshape(int w, int h) {
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(60.0, (GLfloat)w / (GLfloat)h, 1.0, 20.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt(0.0, 0.0, 4.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
 void myKeyboard(unsigned char key, int x, int y) {
@@ -311,7 +318,7 @@ void myKeyboard(unsigned char key, int x, int y) {
             if (warmToCold > 1.0f) warmToCold = 1.0f;
             updateLampColor(); // Update light color
             break;
-        case 'o': // Toggle lamp on/off
+        case 'l': // Toggle lamp on/off
             lampOn = !lampOn;
             break;
         case 'q': // Quit program
@@ -367,7 +374,7 @@ int main(int argc, char** argv) {
 
     myInit();
 
-    loadLampTexture("C:\\Users\\User\\Downloads\\Lando Norris.jpg");
+    loadLampTexture("C:\\Users\\User\\Downloads\\snake.jpg");
 
     glutDisplayFunc(myDisplay);
     glutKeyboardFunc(myKeyboard);
