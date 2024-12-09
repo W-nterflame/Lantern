@@ -10,7 +10,7 @@
     static float angleY = 0.0f;
     static float angleZ = 0.0f;
 
-    bool lampOn = false;                         // Lamp on/off state
+    bool lampOn = true;                         // Lamp on/off state
     float warmToCold = 0.5f;                    // 0.0 = fully warm, 1.0 = fully cold
     float lampColor[3] = {1.0f, 0.8f, 0.6f};    // Initial warm light (RGB)
 
@@ -285,7 +285,7 @@
 
         glPushMatrix();
         glTranslatef(-0.9,0.5,0.9); // third smol lantern WAIT CLR
-        glScalef(0.4,0.5,0.4);
+        glScalef(0.4,0.4,0.4);
         displayLantern();
         glPopMatrix();
 
@@ -319,6 +319,10 @@
                 break;
             case 'l': // Toggle lamp on/off
                 lampOn = !lampOn;
+                if (lampOn)
+                    glEnable(GL_LIGHT0);
+                else
+                    glDisable(GL_LIGHT0);
                 break;
             case 'q': // Quit program
                 exit(0);
@@ -381,7 +385,7 @@
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
         glutInitWindowPosition(400, 100);
         glutInitWindowSize(500, 500);
-        glutCreateWindow("Lantern lalalala chinese lantern snake");
+        glutCreateWindow("chinese lantern snake zodiac");
 
         myInit();
 
