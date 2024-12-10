@@ -10,6 +10,8 @@
     static float angleY = 0.0f;
     static float angleZ = 0.0f;
 
+    float zoomage = 4.5;
+
     bool lampOn = true;                         // Lamp on/off state
     float warmToCold = 0.5f;                    // 0.0 = fully warm, 1.0 = fully cold
     float lampColor[3] = {1.0f, 0.8f, 0.6f};    // Initial warm light (RGB)
@@ -36,7 +38,7 @@
         glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
         glEnable(GL_NORMALIZE); // Ensure normals are scaled properly
-        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClearColor(0.5, 0.5, 0.5, 1.0);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_DEPTH_TEST);
     }
@@ -223,6 +225,17 @@
         glPopMatrix();
     }
 
+    void drawWire(float x1, float y1, float z1, float x2, float y2, float z2) {
+    glLineWidth(2.0); // Set line thickness
+    glColor3d(0,0,0); // Set wire color (e.g., gray)
+
+    glBegin(GL_LINES); // Start drawing a line
+        glVertex3f(x1, y1, z1); // Starting point (roof top)
+        glVertex3f(x2, y2, z2); // Ending point (torus ring)
+    glEnd();
+}
+
+
     void resetMaterial() {
         GLfloat no_emission[] = { 0.0, 0.0, 0.0, 1.0 };
         glMaterialfv(GL_FRONT, GL_EMISSION, no_emission); // Reset emissive material
@@ -275,18 +288,24 @@
         glPushMatrix();
         glTranslatef(0.6,-0.2,0.6); // first big lantern
         displayLantern();
+        glRotated(-90,1,0,0);
+        drawWire(0.0,0.0,0.0,0.0,0.0,1.8); // TEST
         glPopMatrix();
 
         glPushMatrix();
         glTranslatef(-0.8,-0.8,-0.8); // second med lantern
         glScalef(0.6,0.6,0.6);
         displayLantern();
+        glRotated(-90,1,0,0);
+        drawWire(0.0,0.0,0.0,0.0,0.0,4.0); // TEST
         glPopMatrix();
 
         glPushMatrix();
         glTranslatef(-0.9,0.5,0.9); // third smol lantern WAIT CLR
         glScalef(0.4,0.4,0.4);
         displayLantern();
+        glRotated(-90,1,0,0);
+        drawWire(0.0,0.0,0.0,0.0,0.0,2.2); // TEST
         glPopMatrix();
 
         drawHangPanel(3.5, 1.5f);  // ROOF HANGING POINT
@@ -302,8 +321,9 @@
         gluPerspective(60.0, (GLfloat)w / (GLfloat)h, 1.0, 20.0);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        gluLookAt(0.0, 0.0, 4.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        gluLookAt(0.0, 0.0, zoomage, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     }
+
 
     void myKeyboard(unsigned char key, int x, int y) {
         switch (key) {
@@ -324,6 +344,22 @@
                 else
                     glDisable(GL_LIGHT0);
                 break;
+            case 'i': // Zoom in
+                zoomage += 0.2f;
+                if (zoomage > 20.0f) zoomage = 20.0f; // Optional: Prevent extreme zoom out
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                gluLookAt(0.0, 0.0, zoomage, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+                break;
+
+            case 'o': // Zoom out
+                zoomage -= 0.2f;
+                if (zoomage < 1.0f) zoomage = 1.0f; // Optional: Prevent extreme zoom in
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                gluLookAt(0.0, 0.0, zoomage, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+                break;
+
             case 'q': // Quit program
                 exit(0);
                 break;
