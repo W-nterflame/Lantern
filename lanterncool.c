@@ -2,8 +2,19 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <vector>
+#include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"  // Include the stb_image header
+
+std::vector<std::string> lampTexturePaths = {
+    "D:\\XMUM\\Computer_Graphics\\CGAssets\\1.jpg",
+    "D:\\XMUM\\Computer_Graphics\\CGAssets\\2.jpg",
+    "D:\\XMUM\\Computer_Graphics\\CGAssets\\3.jpg"
+
+};
+
+int currentTextureIndex = 0;
 
 // Rotation angles for the cube
 static float angleX = 0.0f;
@@ -61,30 +72,6 @@ void hsvToRgb(float h, float s, float v, float& r, float& g, float& b) {
 float lampColor[3] = {1.0f, 0.0f, 0.0f};  // Initial warm light (RGB)
 
 GLuint lampTextureID;
-
-void myInit(void) {
-    GLfloat mat_specular[] = {0.2, 0.2, 0.2, 1.0};
-    GLfloat mat_shininess[] = {20.0};
-    GLfloat light_position[] = {3.0, 3.0, 3.0, 1.0};
-    GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat ambient_light[] = {0.2, 0.2, 0.2, 1.0};
-
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light);
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_NORMALIZE);  // Ensure normals are scaled properly
-    glClearColor(0.5, 0.5, 0.5, 1.0);
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_DEPTH_TEST);
-}
 
 void loadLampTexture(const char* filepath) {
     glGenTextures(1, &lampTextureID);
@@ -356,7 +343,7 @@ void myDisplay() {
     glPopMatrix();
 
     glPushMatrix(); // Medium second lantern
-    glTranslatef(-0.8, -0.8, -0.8); 
+    glTranslatef(-0.8, -0.8, -0.8);
     glScalef(0.6, 0.6, 0.6);
     displayLantern();
     glRotated(-90, 1, 0, 0);
@@ -364,7 +351,7 @@ void myDisplay() {
     glPopMatrix();
 
     glPushMatrix(); // Small third lantern
-    glTranslatef(-0.9, 0.5, 0.9);  
+    glTranslatef(-0.9, 0.5, 0.9);
     glScalef(0.4, 0.4, 0.4);
     displayLantern();
     glRotated(-90, 1, 0, 0);
@@ -404,7 +391,6 @@ void myKeyboard(unsigned char key, int x, int y) {
             glLoadIdentity();
             gluLookAt(0.0, 0.0, zoomage, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
             break;
-
         case 'i':  // Zoom in
             zoomage -= 0.2f;
             if (zoomage < 1.0f)
@@ -413,7 +399,11 @@ void myKeyboard(unsigned char key, int x, int y) {
             glLoadIdentity();
             gluLookAt(0.0, 0.0, zoomage, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
             break;
-
+        case 'k':
+            currentTextureIndex = (currentTextureIndex + 1) % lampTexturePaths.size();
+            loadLampTexture(lampTexturePaths[currentTextureIndex].c_str()); // Use .c_str()
+            glutPostRedisplay();
+            break;
         case 'q':  // Quit program
             exit(0);
             break;
@@ -450,7 +440,7 @@ void mySpecialKeys(int key, int x, int y) {
 }
 
 int direction = 1;
-// not used yet
+
 void myTimer(int value) {
     if (angleY >= 30.0f) {
         direction =
@@ -470,6 +460,33 @@ void myTimer(int value) {
     glutTimerFunc(16, myTimer, 0);  // roughly 60 FPS
 }
 
+void myInit(void) {
+    GLfloat mat_specular[] = {0.2, 0.2, 0.2, 1.0};
+    GLfloat mat_shininess[] = {20.0};
+    GLfloat light_position[] = {3.0, 3.0, 3.0, 1.0};
+    GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat ambient_light[] = {0.2, 0.2, 0.2, 1.0};
+
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_NORMALIZE);  // Ensure normals are scaled properly
+    glClearColor(0.5, 0.5, 0.5, 1.0);
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_DEPTH_TEST);
+
+    loadLampTexture(lampTexturePaths[currentTextureIndex].c_str());
+}
+
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -479,7 +496,7 @@ int main(int argc, char** argv) {
 
     myInit();
 
-    loadLampTexture("C:\\Users\\User\\Downloads\\Testing\\snake.jpg");
+
 
     glutDisplayFunc(myDisplay);
     glutKeyboardFunc(myKeyboard);
