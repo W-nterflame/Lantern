@@ -24,7 +24,6 @@ static float angleZ = 0.0f;
 float zoomage = 4.5;
 bool lampOn = true;  // Lamp on/off state
 
-// Variables for rainbow animation
 float hue = 0.0f;  // Current hue value (0-360)
 
 // Function to convert HSV to RGB
@@ -101,7 +100,7 @@ void updateLampColor() {
     hsvToRgb(hue, 1.0f, 1.0f, lampColor[0], lampColor[1], lampColor[2]);
 
     // Increment the hue value
-    hue += 0.2;  // Adjust speed (1.0f = slow, higher = faster)
+    hue += 0.2;
     if (hue >= 360.0f) hue -= 360.0f;  // Wrap around when exceeding 360
 }
 
@@ -117,13 +116,11 @@ void setLampMaterial() {
 }
 
 void drawHollowFrameCube(float size) {
-    // Use scaled solid cubes to simulate the frame of a hollow cube (the
-    // casing)
     float frameThickness = 0.05f;  // Thickness of the frame
 
     // Draw edges of the frame using elongated solid cubes
-    // X-axis edges
 
+    // X-axis edges
     glColor3f(0.388, 0.102, 0.027);
 
     for (float y = -0.5f; y <= 0.5f; y += 1.0f) {
@@ -244,7 +241,7 @@ void drawCornerBumpers(float size) {
                 // Position and draw a cube at each corner
                 glPushMatrix();
                 glTranslatef(x * size, y * size, z * size);
-                glScalef(0.3f, 0.3f, 0.3f);  // Make the bumpers smaller
+                glScalef(0.3f, 0.3f, 0.3f);
                 glutSolidCube(bumperSize);   // Draw bumper as a cube
                 glPopMatrix();
             }
@@ -253,7 +250,7 @@ void drawCornerBumpers(float size) {
 }
 
 void drawPanel(float size, float pos, float r, float g,
-               float b)  // pos is for y translation
+               float b)  // Pos is for y translation
 {
     // Panel is a solid cube that connects the bottom of the lamp to the frame
     glPushMatrix();
@@ -266,22 +263,22 @@ void drawPanel(float size, float pos, float r, float g,
 
 void drawHangPanel(float size, float pos)  // pos is for y translation
 {
-    // Panel is a solid cube that connects the bottom of the lamp to the frame
+    // Panel is a solid cube that connects the top or bottom of the lamp to the frame
     glPushMatrix();
     glColor3f(0.2, 0.051, 0.016);
-    glTranslatef(0.0f, pos, 0.0f);  // Position it beneath the solid cube
-    glScalef(1.0f, 0.05f, 1.0f);  // Make the panel thinner than the solid cube
+    glTranslatef(0.0f, pos, 0.0f);
+    glScalef(1.0f, 0.05f, 1.0f);
     glutSolidCube(size);          // Draw the panel as a solid cube
     glPopMatrix();
 }
 
 void drawWire(float x1, float y1, float z1, float x2, float y2, float z2) {
-    glLineWidth(2.0);    // Set line thickness
-    glColor3d(0, 0, 0);  // Set wire color (e.g., gray)
+    glLineWidth(2.0);
+    glColor3d(0, 0, 0);  // Set wire color
 
-    glBegin(GL_LINES);       // Start drawing a line
-    glVertex3f(x1, y1, z1);  // Starting point (roof top)
-    glVertex3f(x2, y2, z2);  // Ending point (torus ring)
+    glBegin(GL_LINES);
+    glVertex3f(x1, y1, z1);  // Starting point
+    glVertex3f(x2, y2, z2);  // End point
     glEnd();
 }
 
@@ -291,9 +288,10 @@ void resetMaterial() {
                  no_emission);  // Reset emissive material
 }
 
-void displayLantern(void) { // fragile part
+void displayLantern(void) { // Main Lantern Arrangement
     glPushMatrix();
-    glRotated(180, 1, 0, 0);  // upside down because
+    glRotated(180, 1, 0, 0);  // Upside down reset
+
     // Draw the light cube
     glColor3f(0.6, 0.6, 0.6);
     setLampMaterial();
@@ -302,7 +300,6 @@ void displayLantern(void) { // fragile part
 
     // Draw the hollow frame as a casing around the light cube
     glColor3f(0.8, 0.8, 0.8);
-
     drawHollowFrameCube(1.2f);  // Slightly larger to act as a casing
 
     drawPanel(1.2f, -0.55f, 1, 0.855,
@@ -326,8 +323,7 @@ void displayLantern(void) { // fragile part
 }
 
 void myDisplay() {
-    glClear(GL_COLOR_BUFFER_BIT |
-            GL_DEPTH_BUFFER_BIT);  // Clear color and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // Clear color and depth buffers
 
     glPushMatrix();
 
@@ -492,11 +488,9 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowPosition(400, 100);
     glutInitWindowSize(500, 500);
-    glutCreateWindow("chinese lantern snake zodiac");
+    glutCreateWindow("Project - Chinese Lantern");
 
     myInit();
-
-
 
     glutDisplayFunc(myDisplay);
     glutKeyboardFunc(myKeyboard);
