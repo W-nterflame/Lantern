@@ -11,7 +11,6 @@ std::vector<std::string> lampTexturePaths = {
     "D:\\XMUM\\Computer_Graphics\\CGAssets\\1.jpg",
     "D:\\XMUM\\Computer_Graphics\\CGAssets\\2.jpg",
     "D:\\XMUM\\Computer_Graphics\\CGAssets\\3.jpg"
-
 };
 
 int currentTextureIndex = 0;
@@ -83,15 +82,12 @@ void loadLampTexture(const char* filepath) {
         exit(1);
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, image);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, width, height, GL_RGB,
-                      GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, width, height, GL_RGB, GL_UNSIGNED_BYTE, image);
 
     stbi_image_free(image);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
@@ -106,8 +102,7 @@ void updateLampColor() {
 
 void setLampMaterial() {
     if (lampOn) {
-        GLfloat lampEmission[] = {lampColor[0], lampColor[1], lampColor[2],
-                                  1.0f};
+        GLfloat lampEmission[] = {lampColor[0], lampColor[1], lampColor[2], 1.0f};
         glMaterialfv(GL_FRONT, GL_EMISSION, lampEmission);
     } else {
         GLfloat lampEmission[] = {0.0f, 0.0f, 0.0f, 1.0f};  // Light off
@@ -249,8 +244,7 @@ void drawCornerBumpers(float size) {
     }
 }
 
-void drawPanel(float size, float pos, float r, float g,
-               float b)  // Pos is for y translation
+void drawPanel(float size, float pos, float r, float g, float b)  // Pos is for y translation
 {
     // Panel is a solid cube that connects the bottom of the lamp to the frame
     glPushMatrix();
@@ -284,8 +278,7 @@ void drawWire(float x1, float y1, float z1, float x2, float y2, float z2) {
 
 void resetMaterial() {
     GLfloat no_emission[] = {0.0, 0.0, 0.0, 1.0};
-    glMaterialfv(GL_FRONT, GL_EMISSION,
-                 no_emission);  // Reset emissive material
+    glMaterialfv(GL_FRONT, GL_EMISSION, no_emission);  // Reset emissive material
 }
 
 void displayLantern(void) { // Main Lantern Arrangement
@@ -302,13 +295,10 @@ void displayLantern(void) { // Main Lantern Arrangement
     glColor3f(0.8, 0.8, 0.8);
     drawHollowFrameCube(1.2f);  // Slightly larger to act as a casing
 
-    drawPanel(1.2f, -0.55f, 1, 0.855,
-              0.573);  // Draw a panel connecting the bottom
-    drawPanel(1.05f, 0.55f, 1, 0.855,
-              0.573);  // Draw a panel connecting the top
+    drawPanel(1.2f, -0.55f, 1, 0.855, 0.573);  // Draw a panel connecting the bottom
+    drawPanel(1.05f, 0.55f, 1, 0.855, 0.573);  // Draw a panel connecting the top
 
-    drawPanel(0.8f, -0.65f, 0.388, 0.102,
-              0.027);  // Draw a panel connecting the bottom for connecting rope
+    drawPanel(0.8f, -0.65f, 0.388, 0.102, 0.027);  // Draw a panel connecting the bottom for connecting rope
 
     glPushMatrix();  // ring
     glTranslatef(0, -0.69, 0);
@@ -439,11 +429,9 @@ int direction = 1;
 
 void myTimer(int value) {
     if (angleY >= 30.0f) {
-        direction =
-            -1;  // Set direction to negative (rotate in the opposite direction)
+        direction = -1;  // Set direction to negative (rotate in the opposite direction)
     } else if (angleY <= -30.0f) {
-        direction =
-            1;  // Set direction to positive (rotate in the opposite direction)
+        direction = 1;  // Set direction to positive (rotate in the opposite direction)
     }
 
     // Update angleY based on the current direction
