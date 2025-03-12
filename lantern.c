@@ -8,9 +8,9 @@
 #include "stb_image.h"  // Include the stb_image header
 
 std::vector<std::string> lampTexturePaths = {
-    "D:\\XMUM\\Computer_Graphics\\CGAssets\\1.jpg",
-    "D:\\XMUM\\Computer_Graphics\\CGAssets\\2.jpg",
-    "D:\\XMUM\\Computer_Graphics\\CGAssets\\3.jpg"
+    "D:\\SZU\\Computer_Graphics\\CGAssets\\1.jpg",
+    "D:\\SZU\\Computer_Graphics\\CGAssets\\2.jpg",
+    "D:\\SZU\\Computer_Graphics\\CGAssets\\3.jpg"
 };
 
 int currentTextureIndex = 0;
